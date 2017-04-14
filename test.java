@@ -9,4 +9,11 @@ public class test {
         System.out.println("testing");
         System.out.println("testing");
     }
+
+    public void AnotherTestMethod(){
+        int a = 10;
+        int b = 5;
+        System.out.println(a+b);
+
+    }
 }

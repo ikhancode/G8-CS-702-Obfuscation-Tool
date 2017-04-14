@@ -3,6 +3,13 @@ import com.github.javaparser.ast.*;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.ClassExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -31,11 +38,13 @@ public class FileParser {
         // prints the resulting compilation unit to default system output
         System.out.println(cu.toString());
 
-        //Change the method using visitor
+        //Change all methods using visitor
         new MethodChangerVisitor().visit(cu, null);
+        //System.out.println(cu.toString());
+
+        //Insert a method into the class
+        MethodInjector(cu);
         System.out.println(cu.toString());
-
-
     }
     private static class MethodChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
@@ -45,7 +54,21 @@ public class FileParser {
 
             // add a new parameter to the method
             n.addParameter("int", "value");
+            BlockStmt block = n.getBody().get();
+
+            NameExpr clazz = new NameExpr("InjectedWorker");
+            MethodCallExpr call = new MethodCallExpr(clazz, "processData");
+            block.addStatement(call);
         }
+    }
+
+    private static void MethodInjector(CompilationUnit cu){
+        ClassOrInterfaceDeclaration fakeClass = cu.addClass("InjectedWorker", Modifier.PRIVATE);
+        fakeClass.addModifier(Modifier.STATIC);
+        MethodDeclaration fakeMethod = fakeClass.addMethod("processData",Modifier.PUBLIC);
+        fakeMethod.addModifier(Modifier.STATIC);
+        BlockStmt fakeMethodContent = new BlockStmt().addStatement(new ReturnStmt("5 * 5"));
+        fakeMethod.setBody(fakeMethodContent);
     }
 }
 
