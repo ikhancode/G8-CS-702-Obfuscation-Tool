@@ -6,20 +6,29 @@ package obfuscator;
 public class test {
 
     public void TESTMETHOD(int value) {
-        System.out.println("testing");
-        System.out.println("testing");
-        System.out.println("testing");
         this.processData();
+        System.out.println("testing");
+        System.out.println("testing");
+        System.out.println("testing");
+        this.checkPrimaryCondition(5);
     }
 
     public void ANOTHERTESTMETHOD(int value) {
+        this.processData();
         int a = 10;
         int b = 5;
         System.out.println(a + b);
-        this.processData();
+        this.checkPrimaryCondition(5);
     }
 
     public int processData() {
         return 5 * 5;
+    }
+
+    public boolean checkPrimaryCondition(int a) {
+        if (a == 0)
+            return true;
+        else
+            return false;
     }
 }

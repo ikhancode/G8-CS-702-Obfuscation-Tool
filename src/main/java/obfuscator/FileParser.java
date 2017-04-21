@@ -3,14 +3,16 @@ import com.github.javaparser.ast.*;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
+import com.github.javaparser.ast.visitor.GenericVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.BufferedWriter;
@@ -28,14 +30,14 @@ public class FileParser {
     public static void main(String[] args) throws Exception {
         // creates an input stream for the file to be parsed
         File test = new File("test.java");
-        System.out.println(test.getCanonicalPath());
+        //System.out.println(test.getCanonicalPath());
         FileInputStream in = new FileInputStream(test);
 
         // parse the file
         CompilationUnit cu = JavaParser.parse(in);
 
         // prints the resulting compilation unit to default system output
-        System.out.println(cu.toString());
+        //System.out.println(cu.toString());
 
         //Change all methods using visitor
         new MethodChangerVisitor().visit(cu, null);
@@ -80,8 +82,11 @@ public class FileParser {
 
             NameExpr clazz = new NameExpr("this");
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
-            block.addStatement(call);
+            block.addStatement(0,call);
+            MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
+            block.addStatement(callTwo);
         }
+
     }
 
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
@@ -91,6 +96,18 @@ public class FileParser {
             fakeMethod.setType("int");
             BlockStmt fakeMethodContent = new BlockStmt().addStatement(new ReturnStmt("5 * 5"));
             fakeMethod.setBody(fakeMethodContent);
+
+            MethodDeclaration fakeMethodTwo = n.addMethod("checkPrimaryCondition",Modifier.PUBLIC);
+            fakeMethodTwo.setType("boolean");
+            fakeMethodTwo.addParameter(new Parameter().setType("int").setName("a"));
+            BlockStmt fakeMethodContentTwo = new BlockStmt();
+
+            IfStmt ifStatement = new IfStmt();
+            ifStatement.setCondition(new NameExpr("a == 0"));
+            ifStatement.setThenStmt(new ReturnStmt("true"));
+            ifStatement.setElseStmt(new ReturnStmt("false"));
+            fakeMethodContentTwo.addStatement(ifStatement);
+            fakeMethodTwo.setBody(fakeMethodContentTwo);
         }
     }
 
