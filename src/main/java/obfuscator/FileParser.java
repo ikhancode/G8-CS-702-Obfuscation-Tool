@@ -81,6 +81,26 @@ public class FileParser {
             NameExpr clazz = new NameExpr("this");
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
             block.addStatement(call);
+            this.flat(n);
+
+        }
+        public void flat(MethodDeclaration n){
+            //System.out.println("Hi " + n.toString());
+            System.out.println(n);
+            int month = 3;
+            String output;
+            switch (month) {
+                case 1:  output = "January";
+                    break;
+                case 2:  output = "February";
+                    break;
+                case 3:  output = n.toString();
+                    break;
+                default: output = "Invalid";
+                    break;
+            }
+            System.out.println(output+n);
+
         }
     }
 
