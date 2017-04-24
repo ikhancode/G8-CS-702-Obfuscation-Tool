@@ -42,8 +42,9 @@ public class FileParser {
         //System.out.println(cu.toString());
 
         //Insert a method into the class
-        new ClassChangerVisitor().visit(cu, null);
+        /*new ClassChangerVisitor().visit(cu, null);
         System.out.println(cu.toString());
+        */
 
         //Make a directory for obfuscated code
         File theDir = new File("Obfuscated Source");
@@ -81,29 +82,38 @@ public class FileParser {
             NameExpr clazz = new NameExpr("this");
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
             block.addStatement(call);
+
+
             this.flat(n);
 
         }
         public void flat(MethodDeclaration n){
-            //System.out.println("Hi " + n.toString());
-            System.out.println(n);
-            int month = 3;
-            String output;
-            switch (month) {
-                case 1:  output = "January";
-                    break;
-                case 2:  output = "February";
-                    break;
-                case 3:  output = n.toString();
-                    break;
-                default: output = "Invalid";
-                    break;
+            BlockStmt block = n.getBody().get();
+            System.out.println(block);
+            int goTo=0;
+            boolean myStat=true;
+            while(myStat) {
+                switch (goTo) {
+                    case 0:
+                        goTo = 2;
+                        System.out.println("Case 0 has been visited");
+                        continue;
+                    case 1:
+                        System.out.println("Case 1 has been visited");
+                        myStat = false;
+                        break;
+                    case 2:
+                        goTo = 1;
+                        System.out.println("Case 2 has been visited");
+                        continue;
+                    default:
+                        return;
+                }
             }
-            System.out.println(output+n);
 
         }
     }
-
+    /*
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
@@ -113,6 +123,7 @@ public class FileParser {
             fakeMethod.setBody(fakeMethodContent);
         }
     }
+    */
 
 
 }

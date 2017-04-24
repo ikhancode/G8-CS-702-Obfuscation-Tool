@@ -5,9 +5,9 @@ package obfuscator;
  */
 public class test {
     public void TestMethod(){
-        System.out.println("testing");
-        System.out.println("testing");
-        System.out.println("testing");
+        System.out.println("case1");
+        System.out.println("case2");
+        System.out.println("case3");
     }
 
     public void AnotherTestMethod(){

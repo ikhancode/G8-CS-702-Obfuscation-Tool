@@ -6,9 +6,9 @@ package obfuscator;
 public class test {
 
     public void TESTMETHOD(int value) {
-        System.out.println("testing");
-        System.out.println("testing");
-        System.out.println("testing");
+        System.out.println("case1");
+        System.out.println("case2");
+        System.out.println("case3");
         this.processData();
     }
 
@@ -17,9 +17,5 @@ public class test {
         int b = 5;
         System.out.println(a + b);
         this.processData();
-    }
-
-    public int processData() {
-        return 5 * 5;
     }
 }
