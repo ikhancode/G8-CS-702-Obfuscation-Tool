@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.EnumSet;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 
 /**
@@ -74,40 +76,70 @@ public class FileParser {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
             // change the name of the method to upper case
-            n.setName(n.getNameAsString().toUpperCase());
+            //n.setName(n.getNameAsString().toUpperCase());
 
             // add a new parameter to the method
-            n.addParameter("int", "value");
-            BlockStmt block = n.getBody().get();
+           // n.addParameter("int", "value");
 
+            //Insert calls to generated dead methods
+            BlockStmt block = n.getBody().get();
+            int blockLength = block.getStatements().size();
             NameExpr clazz = new NameExpr("this");
+
+            //Using a random number to decide the position of the call within the method blck
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
-            block.addStatement(0,call);
+            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
             MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
-            block.addStatement(callTwo);
+            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
+            MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
+            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
         }
 
     }
 
+    /*
+    This is the javaparser's representation of a class. The visit method will insert dead methods into the class
+     */
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+            //Generate a simple method that returns a calculation
             MethodDeclaration fakeMethod = n.addMethod("processData",Modifier.PUBLIC);
             fakeMethod.setType("int");
             BlockStmt fakeMethodContent = new BlockStmt().addStatement(new ReturnStmt("5 * 5"));
             fakeMethod.setBody(fakeMethodContent);
 
+            //Generate a simple method with an if else clause
             MethodDeclaration fakeMethodTwo = n.addMethod("checkPrimaryCondition",Modifier.PUBLIC);
             fakeMethodTwo.setType("boolean");
             fakeMethodTwo.addParameter(new Parameter().setType("int").setName("a"));
             BlockStmt fakeMethodContentTwo = new BlockStmt();
 
+            //Generate the if else statement
             IfStmt ifStatement = new IfStmt();
             ifStatement.setCondition(new NameExpr("a == 0"));
             ifStatement.setThenStmt(new ReturnStmt("true"));
             ifStatement.setElseStmt(new ReturnStmt("false"));
             fakeMethodContentTwo.addStatement(ifStatement);
             fakeMethodTwo.setBody(fakeMethodContentTwo);
+
+            //Generate a method that calls other generated methods
+            MethodDeclaration fakeMethodRedirect = n.addMethod("computeService", Modifier.PUBLIC);
+            fakeMethodRedirect.setType("void");
+            BlockStmt fakeRedirect = new BlockStmt();
+            fakeRedirect.addStatement(new NameExpr("int a = 1"));
+            fakeRedirect.addStatement(new NameExpr("int b = 0"));
+
+            //Generate an if else clause to choose which method to execute
+            ConditionalExpr ifStatementTwo = new ConditionalExpr().setCondition(new NameExpr("a == b"));
+            NameExpr clazz = new NameExpr("this");
+            MethodCallExpr dataCall = new MethodCallExpr(clazz,"processData");
+            MethodCallExpr conditionCall = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("2");
+            ifStatementTwo.setThenExpr(dataCall);
+            ifStatementTwo.setElseExpr(conditionCall);
+
+            fakeRedirect.addStatement(ifStatementTwo);
+            fakeMethodRedirect.setBody(fakeRedirect);
         }
     }
 
