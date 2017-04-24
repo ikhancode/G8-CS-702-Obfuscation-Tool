@@ -5,21 +5,38 @@ package obfuscator;
  */
 public class test {
 
-    public void TESTMETHOD(int value) {
-        System.out.println("testing");
-        System.out.println("testing");
-        System.out.println("testing");
+    public void TestMethod() {
         this.processData();
+        this.computeService();
+        this.checkPrimaryCondition(5);
+        System.out.println("testing");
+        System.out.println("testing");
+        System.out.println("testing");
     }
 
-    public void ANOTHERTESTMETHOD(int value) {
+    public void AnotherTestMethod() {
         int a = 10;
+        this.computeService();
         int b = 5;
-        System.out.println(a + b);
+        this.checkPrimaryCondition(5);
         this.processData();
+        System.out.println(a + b);
     }
 
     public int processData() {
         return 5 * 5;
+    }
+
+    public boolean checkPrimaryCondition(int a) {
+        if (a == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public void computeService() {
+        int a = 1;
+        int b = 0;
+        a == b ? this.processData() : this.checkPrimaryCondition(2);
     }
 }
