@@ -14,6 +14,7 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -47,6 +48,10 @@ public class FileParser {
 
         //Insert a method into the class
         new ClassChangerVisitor().visit(cu, null);
+        System.out.println(cu.toString());
+
+        //Insert simple opaque predicates
+        new InsertOpaquePredicates().visit(cu, null);
         System.out.println(cu.toString());
 
         //Make a directory for obfuscated code
@@ -143,6 +148,36 @@ public class FileParser {
         }
     }
 
+    private static class InsertOpaquePredicates extends VoidVisitorAdapter<Void> {
+        @Override
+        public void visit(MethodDeclaration n, Void arg) {
 
+            //Set some fake variables which will be used by the predicates
+            n.getBody().get().addStatement(0, new NameExpr("int cashFlowThreshold = 4, spendingTurnover = 10, flagInitiator = 0"));
+            n.getBody().get().addStatement(1, new NameExpr("double avgTurnoverRatio = Math.random()*20"));
+
+            //This predicate always evaluates to either True or False
+            IfStmt pEither = new IfStmt();
+            pEither.setCondition(new NameExpr("avgTurnoverRatio > spendingTurnover"));
+            pEither.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
+            pEither.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
+            n.getBody().get().addStatement(2, pEither);
+
+            //This predicate always evaluates to False
+            IfStmt pFalse = new IfStmt();
+            pFalse.setCondition(new NameExpr("spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio)"));
+            pFalse.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
+            pFalse.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
+            n.getBody().get().addStatement(3, pFalse);
+
+            //This predicate always evaluates to True
+            IfStmt pTrue = new IfStmt();
+            pTrue.setCondition(new NameExpr("spendingTurnover % 3 != 0"));
+            pTrue.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
+            pTrue.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
+            n.getBody().get().addStatement(4, pTrue);
+
+        }
+    }
 }
 
