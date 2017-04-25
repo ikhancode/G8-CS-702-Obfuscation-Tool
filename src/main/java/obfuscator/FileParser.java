@@ -49,10 +49,6 @@ public class FileParser {
         new ClassChangerVisitor().visit(cu, null);
         System.out.println(cu.toString());
 
-        //Insert predicates using
-        new InsertOpaquePredicates().visit(cu, null);
-        System.out.println(cu.toString());
-
         //Make a directory for obfuscated code
         File theDir = new File("Obfuscated Source");
         if (!theDir.exists()) {
@@ -146,36 +142,7 @@ public class FileParser {
             fakeMethodRedirect.setBody(fakeRedirect);
         }
     }
-    private static class InsertOpaquePredicates extends VoidVisitorAdapter<Void> {
-        @Override
-        public void visit(MethodDeclaration n, Void arg) {
 
-            //Set some fake variables which will be used by the predicates
-            n.getBody().get().addStatement(0, new NameExpr("int cashFlowThreshold = 4, spendingTurnover = 10"));
-            n.getBody().get().addStatement(1, new NameExpr("double avgTurnoverRatio = Math.random()*20"));
-
-            //This predicate always evaluates to either True or False
-            IfStmt pEither = new IfStmt();
-            pEither.setCondition(new NameExpr("avgTurnoverRatio > spendingTurnover"));
-            pEither.setThenStmt(new ReturnStmt("true"));
-            pEither.setElseStmt(new ReturnStmt("false"));
-            n.getBody().get().addStatement(2, pEither);
-
-            //This predicate always evaluates to False
-            IfStmt pFalse = new IfStmt();
-            pFalse.setCondition(new NameExpr("spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio)"));
-            pFalse.setThenStmt(new ReturnStmt("true"));
-            pFalse.setElseStmt(new ReturnStmt("false"));
-            n.getBody().get().addStatement(3, pFalse);
-
-            //This predicate always evaluates to True
-            IfStmt pTrue = new IfStmt();
-            pTrue.setCondition(new NameExpr("spendingTurnover % 3 != 0"));
-            pTrue.setThenStmt(new ReturnStmt("true"));
-            pTrue.setElseStmt(new ReturnStmt("false"));
-            n.getBody().get().addStatement(4, pTrue);
-        }
-    }
 
 }
 
