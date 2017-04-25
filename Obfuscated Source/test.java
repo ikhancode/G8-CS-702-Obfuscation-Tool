@@ -6,8 +6,8 @@ package obfuscator;
 public class test {
 
     public void TestMethod() {
-        this.processData();
         this.computeService();
+        this.processData();
         this.checkPrimaryCondition(5);
         System.out.println("testing");
         System.out.println("testing");
@@ -15,11 +15,11 @@ public class test {
     }
 
     public void AnotherTestMethod() {
-        int a = 10;
-        this.computeService();
-        int b = 5;
         this.checkPrimaryCondition(5);
         this.processData();
+        this.computeService();
+        int a = 10;
+        int b = 5;
         System.out.println(a + b);
     }
 
