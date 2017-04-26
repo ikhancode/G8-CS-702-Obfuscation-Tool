@@ -17,7 +17,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 
 /**
@@ -87,24 +90,47 @@ public class FileParser {
             this.flat(n);
 
         }
+
+        public void comp(String actual, String val ){
+            if (actual.contains(val)){
+                System.out.println("true");
+            } else {
+                System.out.println("false");
+            }
+        }
+
         public void flat(MethodDeclaration n){
             BlockStmt block = n.getBody().get();
-            System.out.println(block);
+            int blocksize = block.getChildNodes().size();
+            System.out.println("Block Size is: " + blocksize);
+            List myList = new ArrayList();
+            if (blocksize <= 4){
+                System.out.println("This block is larger or equals to 4");
+                for (int i = 0; i < blocksize - 1; i++)
+                {
+                    //System.out.println("Statement " + block.getChildNodes().get(i));
+                    myList.add(block.getChildNodes().get(i));
+                }
+            } else {
+                System.out.println("This block is smaller than 4");
+            }
+
+            //System.out.println(block.getChildNodes().get(3));
             int goTo=0;
             boolean myStat=true;
             while(myStat) {
                 switch (goTo) {
                     case 0:
                         goTo = 2;
-                        System.out.println("Case 0 has been visited");
+                        comp(myList.get(0).toString().toUpperCase(),"SYSTEM");
                         continue;
                     case 1:
-                        System.out.println("Case 1 has been visited");
                         myStat = false;
+                        System.out.println(myList.get(2));
                         break;
                     case 2:
                         goTo = 1;
-                        System.out.println("Case 2 has been visited");
+                        System.out.println(myList.get(1));
                         continue;
                     default:
                         return;
