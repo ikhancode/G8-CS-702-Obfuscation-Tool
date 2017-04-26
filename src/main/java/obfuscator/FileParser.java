@@ -1,16 +1,10 @@
 package obfuscator;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.BufferedWriter;
@@ -18,8 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 
 
@@ -91,11 +83,11 @@ public class FileParser {
 
         }
 
-        public void comp(String actual, String val ){
+        public String comp(String actual, String val ){
             if (actual.contains(val)){
-                System.out.println("true");
+                return "x";
             } else {
-                System.out.println("false");
+                return "y";
             }
         }
 
