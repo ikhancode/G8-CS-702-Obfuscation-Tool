@@ -15,15 +15,14 @@ public class test {
         if (spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio))
             flagInitiator = 1;
         else
-            flagInitiator = 0;
+            System.out.println("testing");
         if (spendingTurnover % 3 != 0)
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        this.processData();
         this.computeService();
         this.checkPrimaryCondition(5);
-        System.out.println("testing");
+        this.processData();
         System.out.println("testing");
         System.out.println("testing");
     }
@@ -38,16 +37,16 @@ public class test {
         if (spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio))
             flagInitiator = 1;
         else
-            flagInitiator = 0;
+            this.processData();
         if (spendingTurnover % 3 != 0)
             flagInitiator = 1;
         else
             flagInitiator = 0;
         this.computeService();
         int a = 10;
-        this.processData();
-        this.checkPrimaryCondition(5);
         int b = 5;
+        this.checkPrimaryCondition(5);
+        float c = Math.random();
         System.out.println(a + b);
     }
 
@@ -58,15 +57,11 @@ public class test {
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        if (spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio))
-            flagInitiator = 1;
-        else
-            flagInitiator = 0;
+        return 5 * 5;
         if (spendingTurnover % 3 != 0)
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        return 5 * 5;
     }
 
     public boolean checkPrimaryCondition(int a) {
@@ -76,18 +71,14 @@ public class test {
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        if (spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio))
-            flagInitiator = 1;
-        else
-            flagInitiator = 0;
-        if (spendingTurnover % 3 != 0)
-            flagInitiator = 1;
-        else
-            flagInitiator = 0;
         if (a == 0)
             return true;
         else
             return false;
+        if (spendingTurnover % 3 != 0)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
     }
 
     public void computeService() {
@@ -97,15 +88,11 @@ public class test {
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        if (spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio))
-            flagInitiator = 1;
-        else
-            flagInitiator = 0;
+        int a = 1;
         if (spendingTurnover % 3 != 0)
             flagInitiator = 1;
         else
             flagInitiator = 0;
-        int a = 1;
         int b = 0;
         a == b ? this.processData() : this.checkPrimaryCondition(2);
     }

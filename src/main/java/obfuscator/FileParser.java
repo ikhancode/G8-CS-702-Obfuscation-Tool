@@ -152,30 +152,43 @@ public class FileParser {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
 
+            //Call the block of code.
+            BlockStmt block =  n.getBody().get();
+
             //Set some fake variables which will be used by the predicates
-            n.getBody().get().addStatement(0, new NameExpr("int cashFlowThreshold = 4, spendingTurnover = 10, flagInitiator = 0"));
-            n.getBody().get().addStatement(1, new NameExpr("double avgTurnoverRatio = Math.random()*20"));
+            block.addStatement(0, new NameExpr("int cashFlowThreshold = 4, spendingTurnover = 10, flagInitiator = 0"));
+            block.addStatement(1, new NameExpr("double avgTurnoverRatio = Math.random()*20"));
 
             //This predicate always evaluates to either True or False
             IfStmt pEither = new IfStmt();
             pEither.setCondition(new NameExpr("avgTurnoverRatio > spendingTurnover"));
             pEither.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
             pEither.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
-            n.getBody().get().addStatement(2, pEither);
+            block.addStatement(2, pEither);
 
             //This predicate always evaluates to False
-            IfStmt pFalse = new IfStmt();
-            pFalse.setCondition(new NameExpr("spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio)"));
-            pFalse.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
-            pFalse.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
-            n.getBody().get().addStatement(3, pFalse);
+            Statement stm = block.getStatement(3);
+            boolean hasVarDec = false;
+            for (int i = 0; i < stm.getChildNodes().size(); i++) {
+                //System.out.println("bbbb bbbb " + stm.getChildNodes().get(i).getClass().toString());
+                if ( stm.getChildNodes().get(i).getClass() != MethodCallExpr.class)
+                    hasVarDec = true;
+            }
+            //System.out.println("fild file file");
+            if (stm.getClass() != ReturnStmt.class && !hasVarDec) {
+                IfStmt pFalse = new IfStmt();
+                pFalse.setCondition(new NameExpr("spendingTurnover > (Math.pow(cashFlowThreshold, 3) * avgTurnoverRatio)"));
+                pFalse.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
+                pFalse.setElseStmt(block.getStatement(3));
+                block.setStatement(3, pFalse );
+            }
 
             //This predicate always evaluates to True
             IfStmt pTrue = new IfStmt();
             pTrue.setCondition(new NameExpr("spendingTurnover % 3 != 0"));
             pTrue.setThenStmt(new ExpressionStmt(new NameExpr("flagInitiator = 1")));
             pTrue.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
-            n.getBody().get().addStatement(4, pTrue);
+            block.addStatement(4, pTrue);
 
         }
     }
