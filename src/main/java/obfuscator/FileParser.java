@@ -1,6 +1,7 @@
 package obfuscator;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -38,9 +39,9 @@ public class FileParser {
         //System.out.println(cu.toString());
 
         //Insert a method into the class
-        /*new ClassChangerVisitor().visit(cu, null);
+        new ClassChangerVisitor().visit(cu, null);
         System.out.println(cu.toString());
-        */
+
 
         //Make a directory for obfuscated code
         File theDir = new File("Obfuscated Source");
@@ -68,120 +69,18 @@ public class FileParser {
     private static class MethodChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
-            // change the name of the method to upper case
-            n.setName(n.getNameAsString().toUpperCase());
 
-            // add a new parameter to the method
-            n.addParameter("int", "value");
             BlockStmt block = n.getBody().get();
 
             NameExpr clazz = new NameExpr("this");
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
             block.addStatement(call);
 
-
-            this.flat(n);
-
+            new ControlFlowFlattener().flat(n);
         }
 
-        public void flat(MethodDeclaration n) {
-            BlockStmt block = n.getBody().get();
-            int blocksize = block.getStatements().size();
-            List myList = new ArrayList();
-            /*
-            if (blocksize >= 4){
-                System.out.println("This block is larger or equals to 4");
-                for (int i = 0; i < blocksize - 1; i++)
-                {
-                    //System.out.println("Statement " + block.getChildNodes().get(i));
-                    myList.add(block.getChildNodes().get(i));
-                }
-            } else {
-                System.out.println("This block is smaller than 4");
-            } */
+    }
 
-            SwitchStmt switchstatement = new SwitchStmt();
-            switchstatement.setSelector(new NameExpr("goTo"));
-            NodeList<Statement> statementList = new NodeList<Statement>();
-            for (int i = 0; i < blocksize; i++) {
-                if (i < blocksize - 1) {
-                    SwitchEntryStmt myCase = new SwitchEntryStmt();
-                    myCase.addStatement(block.getStatement(i));
-                    myCase.addStatement(new NameExpr("goTo = " + (i+1)));
-                    myCase.setLabel(new NameExpr(Integer.toString(i)));
-                    switchstatement.addEntry(myCase);
-                } else {
-                    SwitchEntryStmt myCase = new SwitchEntryStmt();
-                    myCase.addStatement(block.getStatement(i));
-                    myCase.setLabel(new NameExpr(Integer.toString(i)));
-                    switchstatement.addEntry(myCase);
-                }
-            }
-            SwitchEntryStmt defaultState = new SwitchEntryStmt();
-            defaultState.addStatement(new NameExpr("break"));
-            switchstatement.addEntry(defaultState);
-            statementList.add(switchstatement);
-            block.setStatements(statementList);
-
-
-            /*
-            SwitchStmt switchstatement = new SwitchStmt();
-            switchstatement.setSelector(new NameExpr("goTo"));
-            SwitchEntryStmt caseOne = new SwitchEntryStmt();
-            caseOne.addStatement(block.getStatement(0));
-            caseOne.addStatement(new NameExpr("goTo = 1"));
-            caseOne.setLabel(new NameExpr("0"));
-            SwitchEntryStmt caseTwo = new SwitchEntryStmt();
-            caseTwo.addStatement(block.getStatement(1));
-            caseTwo.addStatement(new NameExpr("goTo = 2"));
-            caseTwo.setLabel(new NameExpr("1"));
-            SwitchEntryStmt defaultState = new SwitchEntryStmt();
-            defaultState.addStatement(new NameExpr("goTo = 5"));
-            defaultState.addStatement(new NameExpr("break"));
-
-
-            //switchstatement.addEntry(caseOne);
-            //switchstatement.addEntry(caseTwo);
-            //NodeList<Statement> statementList = new NodeList<Statement>();
-            //statementList.add(switchstatement);
-            //block.setStatements(statementList);
-
-            WhileStmt myWhile = new WhileStmt();
-            switchstatement.addEntry(caseOne);
-            switchstatement.addEntry(caseTwo);
-            switchstatement.addEntry(defaultState);
-            myWhile.setCondition(new NameExpr("goTo != 5"));
-            myWhile.setBody(switchstatement);
-            NodeList<Statement> statementList = new NodeList<Statement>();
-            statementList.add(myWhile);
-            block.setStatements(statementList);
-            */
-
-            /*
-
-            int goTo=0;
-            switch (goTo) {
-                case 0:
-                    goTo = 2;
-                    System.out.println("case 0");
-                        //continue;
-                case 1:
-                    goTo=3;
-                    System.out.println("case 1");
-                        //continue;
-                case 2:
-                    goTo = 1;
-                    System.out.println("case 2");
-                        //continue;
-                default:
-                    break;
-
-                }
-
-            */
-        }
-    }}
-    /*
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
@@ -191,7 +90,10 @@ public class FileParser {
             fakeMethod.setBody(fakeMethodContent);
         }
     }
-    */
+}
+
+
+
 
 
 
