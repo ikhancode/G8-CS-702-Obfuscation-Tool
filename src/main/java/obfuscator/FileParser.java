@@ -4,8 +4,9 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -83,20 +84,12 @@ public class FileParser {
 
         }
 
-        public String comp(String actual, String val ){
-            if (actual.contains(val)){
-                return "x";
-            } else {
-                return "z";
-            }
-        }
-
-        public void flat(MethodDeclaration n){
+        public void flat(MethodDeclaration n) {
             BlockStmt block = n.getBody().get();
-            int blocksize = block.getChildNodes().size();
-            System.out.println("Block Size is: " + blocksize);
+            int blocksize = block.getStatements().size();
             List myList = new ArrayList();
-            if (blocksize <= 4){
+            /*
+            if (blocksize >= 4){
                 System.out.println("This block is larger or equals to 4");
                 for (int i = 0; i < blocksize - 1; i++)
                 {
@@ -105,32 +98,89 @@ public class FileParser {
                 }
             } else {
                 System.out.println("This block is smaller than 4");
-            }
+            } */
 
-            //System.out.println(block.getChildNodes().get(3));
-            int goTo=0;
-            boolean myStat=true;
-            while(myStat) {
-                switch (goTo) {
-                    case 0:
-                        goTo = 2;
-                        comp(myList.get(0).toString().toUpperCase(),"SYSTEM");
-                        continue;
-                    case 1:
-                        myStat = false;
-                        System.out.println(myList.get(2));
-                        break;
-                    case 2:
-                        goTo = 1;
-                        System.out.println(myList.get(1));
-                        continue;
-                    default:
-                        return;
+            SwitchStmt switchstatement = new SwitchStmt();
+            switchstatement.setSelector(new NameExpr("goTo"));
+            NodeList<Statement> statementList = new NodeList<Statement>();
+            for (int i = 0; i < blocksize; i++) {
+                if (i < blocksize - 1) {
+                    SwitchEntryStmt myCase = new SwitchEntryStmt();
+                    myCase.addStatement(block.getStatement(i));
+                    myCase.addStatement(new NameExpr("goTo = " + (i+1)));
+                    myCase.setLabel(new NameExpr(Integer.toString(i)));
+                    switchstatement.addEntry(myCase);
+                } else {
+                    SwitchEntryStmt myCase = new SwitchEntryStmt();
+                    myCase.addStatement(block.getStatement(i));
+                    myCase.setLabel(new NameExpr(Integer.toString(i)));
+                    switchstatement.addEntry(myCase);
                 }
             }
+            SwitchEntryStmt defaultState = new SwitchEntryStmt();
+            defaultState.addStatement(new NameExpr("break"));
+            switchstatement.addEntry(defaultState);
+            statementList.add(switchstatement);
+            block.setStatements(statementList);
 
+
+            /*
+            SwitchStmt switchstatement = new SwitchStmt();
+            switchstatement.setSelector(new NameExpr("goTo"));
+            SwitchEntryStmt caseOne = new SwitchEntryStmt();
+            caseOne.addStatement(block.getStatement(0));
+            caseOne.addStatement(new NameExpr("goTo = 1"));
+            caseOne.setLabel(new NameExpr("0"));
+            SwitchEntryStmt caseTwo = new SwitchEntryStmt();
+            caseTwo.addStatement(block.getStatement(1));
+            caseTwo.addStatement(new NameExpr("goTo = 2"));
+            caseTwo.setLabel(new NameExpr("1"));
+            SwitchEntryStmt defaultState = new SwitchEntryStmt();
+            defaultState.addStatement(new NameExpr("goTo = 5"));
+            defaultState.addStatement(new NameExpr("break"));
+
+
+            //switchstatement.addEntry(caseOne);
+            //switchstatement.addEntry(caseTwo);
+            //NodeList<Statement> statementList = new NodeList<Statement>();
+            //statementList.add(switchstatement);
+            //block.setStatements(statementList);
+
+            WhileStmt myWhile = new WhileStmt();
+            switchstatement.addEntry(caseOne);
+            switchstatement.addEntry(caseTwo);
+            switchstatement.addEntry(defaultState);
+            myWhile.setCondition(new NameExpr("goTo != 5"));
+            myWhile.setBody(switchstatement);
+            NodeList<Statement> statementList = new NodeList<Statement>();
+            statementList.add(myWhile);
+            block.setStatements(statementList);
+            */
+
+            /*
+
+            int goTo=0;
+            switch (goTo) {
+                case 0:
+                    goTo = 2;
+                    System.out.println("case 0");
+                        //continue;
+                case 1:
+                    goTo=3;
+                    System.out.println("case 1");
+                        //continue;
+                case 2:
+                    goTo = 1;
+                    System.out.println("case 2");
+                        //continue;
+                default:
+                    break;
+
+                }
+
+            */
         }
-    }
+    }}
     /*
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
@@ -144,5 +194,5 @@ public class FileParser {
     */
 
 
-}
+
 

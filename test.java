@@ -16,4 +16,12 @@ public class test {
         System.out.println(a+b);
 
     }
+
+    public void ThirdMethod () {
+        for (int i  = 0; i < 100 ; i++){
+            System.out.println("case1");
+            System.out.println("case2");
+            System.out.println("case3");
+        }
+    }
 }
