@@ -13,6 +13,7 @@ public class test {
     public void AnotherTestMethod(){
         int a = 10;
         int b = 5;
+        float c =  Math.random();
         System.out.println(a+b);
         System.out.println(b+b);
         System.out.println(a+a);

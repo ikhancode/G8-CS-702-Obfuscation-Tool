@@ -6,73 +6,74 @@ package obfuscator;
 public class test {
 
     public void TestMethod() {
-        int goTo = 0;
-        goTo = 0;
-        while (goTo != -1) switch(goTo) {
-            case 0:
-                System.out.println("case1");
-                goTo = 1;
-                break;
-            case 1:
-                System.out.println("case2");
-                goTo = 2;
-                break;
-            case 2:
-                System.out.println("case3");
-                goTo = 3;
-                break;
-            case 3:
-                this.processData();
-                goTo = -1;
-                break;
-            default:
-                break;
-        }
+        double cashFlowThreshold = 4;
+        double spendingTurnover = 10 ;
+        int flagInitiator = 0;
+        double avgTurnoverRatio = Math.random()*20;
+        if (spendingTurnover % 3 != 0)
+            this.checkPrimaryCondition(5);
+        else
+            flagInitiator = 0;
+        if (spendingTurnover % 3 != 0)
+            this.checkPrimaryCondition(5);
+        else
+            flagInitiator = 0;
+        if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
+            flagInitiator = 1;
+        else
+            this.checkPrimaryCondition(5);
+        if (spendingTurnover % 3 != 0)
+            this.processData();
+        else
+            flagInitiator = 0;
+        if (avgTurnoverRatio > spendingTurnover)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
+        if (spendingTurnover % 3 != 0)
+            this.processData();
+        else
+            flagInitiator = 0;
+        if (spendingTurnover % 3 != 0)
+            this.processData();
+        else
+            flagInitiator = 0;
         this.processData();
-        this.processData();
+        this.computeService();
+        System.out.println("testing");
+        System.out.println("testing");
+        System.out.println("testing");
     }
 
     public void AnotherTestMethod() {
-        int goTo = 0;
+        double cashFlowThreshold = 4;
+        double spendingTurnover = 10 ;
+        int flagInitiator = 0;
+        double avgTurnoverRatio = Math.random()*20;
+        if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
+            flagInitiator = 1;
+        else
+            this.checkPrimaryCondition(5);
+        if (avgTurnoverRatio > spendingTurnover)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
+        if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
+            flagInitiator = 1;
+        else
+            this.computeService();
         int a = 10;
+        if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
+            flagInitiator = 1;
+        else
+            this.processData();
         int b = 5;
-        goTo = 2;
-        while (goTo != -1) switch(goTo) {
-            case 2:
-                System.out.println(a + b);
-                goTo = 3;
-                break;
-            case 3:
-                System.out.println(b + b);
-                goTo = 4;
-                break;
-            case 4:
-                System.out.println(a + a);
-                goTo = -1;
-                break;
-            default:
-                break;
-        }
-        this.processData();
-        int c = 25;
-        goTo = 6;
-        while (goTo != -1) switch(goTo) {
-            case 6:
-                System.out.println(c + b);
-                goTo = 7;
-                break;
-            case 7:
-                System.out.println(c + a);
-                goTo = 8;
-                break;
-            case 8:
-                this.processData();
-                goTo = -1;
-                break;
-            default:
-                break;
-        }
-        this.processData();
+
+        float c = Math.random();
+        if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
+            flagInitiator = 1;
+        else
+            System.out.println(a + b);
     }
 
     public void ThirdMethod() {
@@ -98,6 +99,43 @@ public class test {
     }
 
     public int processData() {
+        double cashFlowThreshold = 4;
+        double spendingTurnover = 10 ;
+        int flagInitiator = 0;
+        double avgTurnoverRatio = Math.random()*20;
+        if (avgTurnoverRatio > spendingTurnover)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
         return 5 * 5;
+    }
+
+    public boolean checkPrimaryCondition(int a) {
+        double cashFlowThreshold = 4;
+        double spendingTurnover = 10 ;
+        int flagInitiator = 0;
+        double avgTurnoverRatio = Math.random()*20;
+        if (avgTurnoverRatio > spendingTurnover)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
+        if (a == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public void computeService() {
+        double cashFlowThreshold = 4;
+        double spendingTurnover = 10 ;
+        int flagInitiator = 0;
+        double avgTurnoverRatio = Math.random()*20;
+        int a = 1;
+        int b = 0;
+        if (avgTurnoverRatio > spendingTurnover)
+            flagInitiator = 1;
+        else
+            flagInitiator = 0;
+        a == b ? this.processData() : this.checkPrimaryCondition(2);
     }
 }
