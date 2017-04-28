@@ -31,10 +31,12 @@ public class ControlFlowFlattener {
             for (int i = 0; i < stm.getChildNodes().size(); i++) {
                 //System.out.println("bbbb bbbb " + stm.getChildNodes().get(i).getClass().toString());
                 Class statementClass = stm.getChildNodes().get(i).getClass();
+                //Non method calls can be variable declarations
                 if ( statementClass != MethodCallExpr.class ){
                     canBeFlattened = false;
                 }
             }
+            //Also check for return statements
             if(canBeFlattened && stm.getClass() != ReturnStmt.class){
                 //System.out.println("Index added: " + j);
                 methodCallIndexes.add(j);
@@ -50,6 +52,7 @@ public class ControlFlowFlattener {
             subBlock.add(methodCallIndexes.get(0));
         }
         boolean isLastBlock = false;
+        //Find consecutive statements that can be flattened
         for(int i = 1; i < methodCallIndexes.size(); i++){
             int index = methodCallIndexes.get(i);
             isLastBlock = false;
@@ -78,18 +81,24 @@ public class ControlFlowFlattener {
         block.addStatement(0, new NameExpr("int goTo = 0"));
     }
 
+    //This method places the block of statements into a switch statement
     private void flattenBlock(ConsecutiveBlockIndexes subBlock, BlockStmt block){
+
+        //Check for blocks with 0 or 1 statement. Don't obfuscate those.
         if(subBlock.indexes.size() > 1){
+
             SwitchStmt switchStatement = new SwitchStmt();
             switchStatement.setSelector(new NameExpr("goTo"));
             NodeList<Statement> statementList = new NodeList<Statement>();
 
+            //While loop to traverse the switch cases
             WhileStmt whileLoop = new WhileStmt();
             whileLoop.setCondition(new NameExpr("goTo != -1"));
             int counter = 1;    //used to keep track of the last case in the switch statement
             for(int j : subBlock.indexes){
                 //System.out.println("Block contains statement index: " + subBlock.get(j));
                 if (counter++ != subBlock.indexes.size()) {
+                    //Create a case and increment goTo to point to next case
                     SwitchEntryStmt myCase = new SwitchEntryStmt();
                     myCase.addStatement(block.getStatement(j));
                     myCase.addStatement(new NameExpr("goTo = " + (j+1)));
@@ -97,7 +106,7 @@ public class ControlFlowFlattener {
                     myCase.setLabel(new NameExpr(Integer.toString(j)));
                     switchStatement.addEntry(myCase);
                 } else {
-                    //This is the last case, set goTo to -1 to
+                    //This is the last case, set goTo to -1 to exit the while loop
                     SwitchEntryStmt myCase = new SwitchEntryStmt();
                     myCase.addStatement(block.getStatement(j));
                     myCase.addStatement(new NameExpr("goTo = -1"));

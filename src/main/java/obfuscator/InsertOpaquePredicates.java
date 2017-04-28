@@ -30,15 +30,18 @@ public class InsertOpaquePredicates  {
         ArrayList<Integer> methodCallIndexes = new ArrayList<>();
 
         //This for loop works out all of the method calls in the block and records the indexes
+        //This is to prevent predicates from messing up variable declarations
         for (int j = 0; j < methodLength; j++){
             Statement stm = block.getStatement(j);
             boolean hasVarDec = false;
             for (int i = 0; i < stm.getChildNodes().size(); i++) {
                 //System.out.println("bbbb bbbb " + stm.getChildNodes().get(i).getClass().toString());
+                //If the statement contains more than method calls it could be declaring variables
                 if ( stm.getChildNodes().get(i).getClass() != MethodCallExpr.class){
                     hasVarDec = true;
                 }
             }
+            //Also check for return statements
             if(!hasVarDec && stm.getClass() != ReturnStmt.class){
                 methodCallIndexes.add(j);
             }

@@ -113,11 +113,6 @@ public class FileParser {
     private static class MethodChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
-            // change the name of the method to upper case
-            //n.setName(n.getNameAsString().toUpperCase());
-
-            // add a new parameter to the method
-           // n.addParameter("int", "value");
 
             //Insert calls to generated dead methods
             BlockStmt block = n.getBody().get();
@@ -126,7 +121,7 @@ public class FileParser {
 
             //Only inject calls if its not the method itself
             if(!n.getNameAsString().equals("processData") && !n.getNameAsString().equals("checkPrimaryCondition") && !n.getNameAsString().equals("computeService")){
-                //Using a random number to decide the position of the call within the method blck
+                //Using a random number to decide the position of the call within the method block
                 MethodCallExpr call = new MethodCallExpr(clazz,"processData");
                 block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
                 MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
@@ -135,7 +130,7 @@ public class FileParser {
                 block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
             }
 
-
+            //Obfuscate using opaque predicates and control flow flattening
             new ControlFlowFlattener().flat(n);
             new InsertOpaquePredicates().insertPredicates(n);
         }
@@ -150,9 +145,11 @@ public class FileParser {
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
 
             insertMethods(n);
+            //Check for nested classes
             List<Node> nodes = n.getChildNodes();
             for(Node node : nodes){
                 System.out.println(node.getClass());
+                //Methods must also be inserted into nested classes
                 if(node.getClass() == ClassOrInterfaceDeclaration.class){
                     insertMethods((ClassOrInterfaceDeclaration) node);
                 }
@@ -221,6 +218,7 @@ public class FileParser {
         File[] files = file.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
+                //Check if the file is a .java source file
                 if(file.isFile()) {
                     String path = file.getAbsolutePath().toLowerCase();
                     System.out.println("path is :" + path);
