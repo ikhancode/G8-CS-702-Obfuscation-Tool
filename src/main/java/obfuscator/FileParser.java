@@ -128,6 +128,9 @@ public class FileParser {
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
             MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
+
+            new ControlFlowFlattener().flat(n);
+            new InsertOpaquePredicates().insertPredicates(n);
         }
 
     }
