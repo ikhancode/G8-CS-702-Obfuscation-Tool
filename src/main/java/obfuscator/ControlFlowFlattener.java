@@ -35,7 +35,7 @@ public class ControlFlowFlattener {
                     canBeFlattened = false;
                 }
             }
-            if(canBeFlattened){
+            if(canBeFlattened && stm.getClass() != ReturnStmt.class){
                 //System.out.println("Index added: " + j);
                 methodCallIndexes.add(j);
             }
@@ -62,7 +62,7 @@ public class ControlFlowFlattener {
             else{
                 //subBlocks.add(subBlock);
                 this.flattenBlock(subBlock, block);
-                System.out.println("New block");
+                //System.out.println("New block");
                 subBlock = new ConsecutiveBlockIndexes();
                 subBlock.add(index);
                 isLastBlock = true;

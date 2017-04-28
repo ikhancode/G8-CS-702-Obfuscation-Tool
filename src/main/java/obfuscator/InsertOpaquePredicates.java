@@ -39,7 +39,7 @@ public class InsertOpaquePredicates  {
                     hasVarDec = true;
                 }
             }
-            if(!hasVarDec){
+            if(!hasVarDec && stm.getClass() != ReturnStmt.class){
                 methodCallIndexes.add(j);
             }
         }
