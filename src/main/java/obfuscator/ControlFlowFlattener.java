@@ -7,6 +7,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * Created by alex on 4/27/2017.
  */
 public class ControlFlowFlattener {
+
     public void flat(MethodDeclaration n){
         BlockStmt block = n.getBody().get();
 
@@ -44,7 +46,9 @@ public class ControlFlowFlattener {
         Extract each consecutive sub block of calls to flatten
         */
         ConsecutiveBlockIndexes subBlock = new ConsecutiveBlockIndexes();
-        subBlock.add(methodCallIndexes.get(0));
+        if(methodCallIndexes.size() != 0){
+            subBlock.add(methodCallIndexes.get(0));
+        }
         boolean isLastBlock = false;
         for(int i = 1; i < methodCallIndexes.size(); i++){
             int index = methodCallIndexes.get(i);
@@ -112,7 +116,7 @@ public class ControlFlowFlattener {
 
             for(int statementIndex : subBlock.indexes){
                 //Replace exisiting code with placeholder code since the existing code is all in the switch statement
-                block.setStatement(statementIndex, new ExpressionStmt(new NameExpr("this.processData()")));
+                block.setStatement(statementIndex, new ExpressionStmt(new MethodCallExpr(new NameExpr("this"), "processData")));
             }
             block.setStatement(subBlock.get(0), new ExpressionStmt(new NameExpr("goTo = " + subBlock.get(0))));
             block.setStatement(subBlock.get(1), whileLoop);

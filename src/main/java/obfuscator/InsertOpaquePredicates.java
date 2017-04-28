@@ -13,10 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by alex on 4/27/2017.
  */
-public class InsertOpaquePredicates extends VoidVisitorAdapter<Void> {
+public class InsertOpaquePredicates  {
 
-    @Override
-    public void visit(MethodDeclaration n, Void arg) {
+    public void insertPredicates(MethodDeclaration n) {
 
         //Call the block of code.
         BlockStmt block =  n.getBody().get();
@@ -54,7 +53,7 @@ public class InsertOpaquePredicates extends VoidVisitorAdapter<Void> {
                 pTrue.setCondition(new NameExpr("spendingTurnover % 3 != 0"));
                 pTrue.setThenStmt(block.getStatement(i));
                 pTrue.setElseStmt(new ExpressionStmt(new NameExpr("flagInitiator = 0")));
-                block.addStatement(i, pTrue);
+                block.setStatement(i, pTrue);
             }else{
                 //This predicate always evaluates to False
                 IfStmt pFalse = new IfStmt();

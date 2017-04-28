@@ -47,7 +47,8 @@ public class FileParser {
         CompilationUnit cu = JavaParser.parse(in);
 
         // prints the resulting compilation unit to default system output
-        //System.out.println(cu.toString());
+        System.out.println(cu.toString());
+
 
         //Change all methods using visitor
         new MethodChangerVisitor().visit(cu, null);
@@ -57,10 +58,6 @@ public class FileParser {
         new ClassChangerVisitor().visit(cu, null);
         System.out.println(cu.toString());
 
-
-        //Insert simple opaque predicates
-        new InsertOpaquePredicates().visit(cu, null);
-        System.out.println(cu.toString());
 
         //Make a directory for obfuscated code
         File theDir = new File("Obfuscated Source");
@@ -89,12 +86,6 @@ public class FileParser {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
 
-            // change the name of the method to upper case
-            //n.setName(n.getNameAsString().toUpperCase());
-
-            // add a new parameter to the method
-           // n.addParameter("int", "value");
-
             //Insert calls to generated dead methods
             BlockStmt block = n.getBody().get();
             int blockLength = block.getStatements().size();
@@ -102,14 +93,16 @@ public class FileParser {
 
             //Using a random number to decide the position of the call within the method blck
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
-            block.addStatement(call);
-            
+
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
             MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
             MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
+
             new ControlFlowFlattener().flat(n);
+            new InsertOpaquePredicates().insertPredicates(n);
+
         }
 
     }
@@ -118,6 +111,7 @@ public class FileParser {
     This is the javaparser's representation of a class. The visit method will insert dead methods into the class
      */
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
+
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
             //Generate a simple method that returns a calculation
