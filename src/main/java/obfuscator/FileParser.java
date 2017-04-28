@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -93,13 +94,15 @@ public class FileParser {
         // parse the file
         CompilationUnit cu = JavaParser.parse(in);
 
+        //Insert a method into the class
+        new ClassChangerVisitor().visit(cu, null);
+        //System.out.println(cu.toString());
+
         //Change all methods using visitor
         new MethodChangerVisitor().visit(cu, null);
         //System.out.println(cu.toString());
 
-        //Insert a method into the class
-        new ClassChangerVisitor().visit(cu, null);
-        System.out.println(cu.toString());
+
 
         //Overwrite the source files
         BufferedWriter writer = new BufferedWriter( new FileWriter(file, false));
@@ -121,13 +124,17 @@ public class FileParser {
             int blockLength = block.getStatements().size();
             NameExpr clazz = new NameExpr("this");
 
-            //Using a random number to decide the position of the call within the method blck
-            MethodCallExpr call = new MethodCallExpr(clazz,"processData");
-            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
-            MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
-            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
-            MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
-            block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
+            //Only inject calls if its not the method itself
+            if(!n.getNameAsString().equals("processData") && !n.getNameAsString().equals("checkPrimaryCondition") && !n.getNameAsString().equals("computeService")){
+                //Using a random number to decide the position of the call within the method blck
+                MethodCallExpr call = new MethodCallExpr(clazz,"processData");
+                block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
+                MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
+                block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
+                MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
+                block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
+            }
+
 
             new ControlFlowFlattener().flat(n);
             new InsertOpaquePredicates().insertPredicates(n);
@@ -141,6 +148,18 @@ public class FileParser {
     private static class ClassChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+
+            insertMethods(n);
+            List<Node> nodes = n.getChildNodes();
+            for(Node node : nodes){
+                System.out.println(node.getClass());
+                if(node.getClass() == ClassOrInterfaceDeclaration.class){
+                    insertMethods((ClassOrInterfaceDeclaration) node);
+                }
+            }
+        }
+
+        private void insertMethods(ClassOrInterfaceDeclaration n ){
             //Generate a simple method that returns a calculation
             MethodDeclaration fakeMethod = n.addMethod("processData",Modifier.PUBLIC);
             fakeMethod.setType("int");
