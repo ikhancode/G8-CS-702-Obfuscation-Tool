@@ -68,11 +68,34 @@ public class test {
         else
             this.processData();
         int b = 5;
+
         float c = Math.random();
         if (spendingTurnover > Math.pow(cashFlowThreshold, 5))
             flagInitiator = 1;
         else
             System.out.println(a + b);
+    }
+
+    public void ThirdMethod() {
+        int goTo = 0;
+        for (int i = 0; i < 100; i++) {
+            System.out.println("case1");
+            System.out.println("case2");
+            System.out.println("case3");
+        }
+        goTo = 1;
+        while (goTo != -1) switch(goTo) {
+            case 1:
+                System.out.println("some stuff");
+                goTo = 2;
+                break;
+            case 2:
+                this.processData();
+                goTo = -1;
+                break;
+            default:
+                break;
+        }
     }
 
     public int processData() {

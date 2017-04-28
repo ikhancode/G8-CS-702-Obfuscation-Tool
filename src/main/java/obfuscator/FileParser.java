@@ -3,6 +3,10 @@ import com.github.javaparser.ast.*;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.*;
+
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -16,10 +20,13 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -49,6 +56,7 @@ public class FileParser {
         //Insert a method into the class
         new ClassChangerVisitor().visit(cu, null);
         System.out.println(cu.toString());
+
 
         //Insert simple opaque predicates
         new InsertOpaquePredicates().visit(cu, null);
@@ -80,6 +88,7 @@ public class FileParser {
     private static class MethodChangerVisitor extends VoidVisitorAdapter<Void> {
         @Override
         public void visit(MethodDeclaration n, Void arg) {
+
             // change the name of the method to upper case
             //n.setName(n.getNameAsString().toUpperCase());
 
@@ -93,11 +102,14 @@ public class FileParser {
 
             //Using a random number to decide the position of the call within the method blck
             MethodCallExpr call = new MethodCallExpr(clazz,"processData");
+            block.addStatement(call);
+            
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),call);
             MethodCallExpr callTwo = new MethodCallExpr(clazz,"checkPrimaryCondition").addArgument("5");
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callTwo);
             MethodCallExpr callThree = new MethodCallExpr(clazz,"computeService");
             block.addStatement(ThreadLocalRandom.current().nextInt(0, blockLength),callThree);
+            new ControlFlowFlattener().flat(n);
         }
 
     }
@@ -147,6 +159,12 @@ public class FileParser {
             fakeMethodRedirect.setBody(fakeRedirect);
         }
     }
-
 }
+
+
+
+
+
+
+
 
